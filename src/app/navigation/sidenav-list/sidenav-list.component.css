@@ -1,0 +1,18 @@
+a{
+    text-decoration: none;
+}
+a:hover{
+    color: lightgrey;
+}
+a:active{
+    color: lightgrey;
+}
+.navigation-items{
+    list-style-type: none;
+    margin: none;
+    padding:none;
+}
+.nav-caption{
+    display: inline-block;
+    padding-left: 6px;
+}

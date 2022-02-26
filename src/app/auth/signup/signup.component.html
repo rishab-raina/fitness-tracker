@@ -1,0 +1,54 @@
+<section>
+    <form  (ngSubmit)="onSubmit(f)" fxLayout="column"  fxLayoutAlign="center center" fxLayoutGap="10px" #f="ngForm"
+    >
+        <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input 
+            type="email"
+            name="email"
+            matInput placeholder="ex. Your Email"
+            ngModel
+            required
+            email
+            #emailInput="ngModel">
+          <!-- can be done in both ways -->
+            <!-- <mat-error *ngIf="!emailInput.valid && emailInput.value?.length">Email is invalid </mat-error> -->
+            <mat-error *ngIf="!emailInput.hasError('required')">Email is invalid </mat-error>
+            <mat-error *ngIf="emailInput.touched && !emailInput.value?.length">This field must not be empty</mat-error>
+            
+
+        </mat-form-field>
+        <mat-form-field >
+                <mat-label>Password</mat-label>
+                <input 
+                type="password"
+                name="password"
+                matInput placeholder="ex. P@12!/xxx" 
+                ngModel
+                required
+                minlength="6"
+                #pwdInput="ngModel">
+                <mat-hint *ngIf="pwdInput.hasError('minlength')">Should be atleast 6 Characters long</mat-hint>
+                <mat-hint align="end"> {{pwdInput.value?.length}}/6</mat-hint>
+                <mat-error align="end"> {{pwdInput.value?.length}}/6</mat-error>
+
+                <mat-error>Should be atleast 6 Characters long</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>D.O.B</mat-label>
+            <input matInput  [matDatepicker]="picker" [max]="maxDate" name="birth date" required ngModel>
+            <mat-datepicker-toggle [for]="picker" matSuffix></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-checkbox #agree color="accent" name="agree" required ngModel><mat-hint>Agree To T&C</mat-hint>
+            
+            
+        </mat-checkbox>
+        
+        <button type="submit" mat-raised-button color="accent" [disabled]="f.invalid">Submit</button>
+
+    </form>
+</section>
+<section>
+
+</section>

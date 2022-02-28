@@ -6,10 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./past-training.component.css']
 })
 export class PastTrainingComponent implements OnInit {
-
+   speed = 100;
   constructor() { }
-
+ 
   ngOnInit(): void {
+    console.log(this.speed);
   }
-
+    
 }

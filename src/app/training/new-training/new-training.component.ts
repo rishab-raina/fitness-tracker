@@ -15,37 +15,17 @@ import { Exercise } from '../exercise.model';
 
 export class NewTrainingComponent implements OnInit {
  // exercises: Exercise[]= [];
-  exercises: Observable<Exercise[]>;
+  exercises: Exercise[];
   //@Output() startNewTraining = new EventEmitter<void>();
   constructor(private trainingService: TrainingService,
-    private db: AngularFirestore) { }
+    ) { }
 
   ngOnInit(): void {
-    //this.exercises = this.trainingService.getExercises();
-     this.exercises = 
-    this.db.collection('availableExercises').snapshotChanges().pipe(
-      map( 
-        docArray=>{
-        return docArray.map((arrayItem)=>{
-          return{
-            id: arrayItem.payload.doc.id,
-            name: arrayItem.payload.doc.data()['dataname'],
-            duration:arrayItem.payload.doc.data()['duration'],
-            calories:arrayItem.payload.doc.data()['calories']
-
-           
-
-           
-
-
-          }
-        })
-      })
-    )
-    //.valueChanges();
-    // .subscribe(result=>{
-    //   console.log(result)
-    // })
+    this.trainingService.fetchExercises();
+     this.trainingService.exercisesChanged.subscribe((exercises: Exercise[])=>{
+      this.exercises = exercises;
+     })
+ 
   }
   onStartTraining(form: NgForm){
     //this.startNewTraining.emit();

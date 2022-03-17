@@ -1,6 +1,6 @@
 import { Exercise } from './exercise.model'
 import { Injectable } from '@angular/core'
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, Subscription } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map } from 'rxjs/operators';
 
@@ -9,7 +9,9 @@ import { map } from 'rxjs/operators';
 export class TrainingService{
     exerciseChanged = new Subject<Exercise>(); 
     exercisesChanged = new Subject<Exercise[]>();
+    finshedExercisesChanged = new Subject<Exercise[]>();
     exercises: Exercise[] = [];
+    firebaseSubscriptions: Subscription[] = [];
 
    private availableExercises: Exercise[] ;
 
@@ -17,7 +19,8 @@ export class TrainingService{
 
     constructor(private db: AngularFirestore){}
     fetchExercises(){
-            this.db.collection('availableExercises').snapshotChanges().pipe(
+            this.firebaseSubscriptions.push(
+                this.db.collection('availableExercises').snapshotChanges().pipe(
             map( 
               docArray=>{
               return docArray.map((arrayItem)=>{
@@ -33,6 +36,7 @@ export class TrainingService{
               this.availableExercises = exercises;
               this.exercisesChanged.next([...this.availableExercises])
           })
+        )
     }
     startExercie(selectedId: string){
         this.runningExercise = this.availableExercises.find(exercise=>{
@@ -42,7 +46,8 @@ export class TrainingService{
 
     }
     completeExercise(){
-        this.exercises.push(
+        //this.exercises.push
+        this.addFinishedExercise(
             {...this.runningExercise, 
                 date:new Date(), 
                 state: 'completed' }
@@ -52,10 +57,11 @@ export class TrainingService{
 
     }
     cancelExercise( progress: number){
-        this.exercises.push(
+        //this.exercises.push
+        this.addFinishedExercise(
             {...this.runningExercise, 
                 duration: this.runningExercise.duration * (progress / 100),
-                calories: this.runningExercise.duration * (progress / 100),
+                calories: this.runningExercise.calories * (progress / 100),
                 date:new Date(), 
                 state: 'cancelled' }
         )
@@ -67,12 +73,33 @@ export class TrainingService{
 
     getExercises(){
         return this.availableExercises.slice();
+       
+       
 
     }
     getRunningExercise(){
-        return {...this.runningExercise}
+         return {...this.runningExercise}
+    
+    
     }
     getCompletedOrCancelledExercises(){
-        return this.exercises.slice();
+        // this.exercises.slice();
+         this.firebaseSubscriptions.push(
+             this.db.collection('finishedExercises').valueChanges()
+        .subscribe((exercises: Exercise[])=>{
+              this.exercises = exercises;
+              this.finshedExercisesChanged.next([...this.exercises])
+          })
+         )
+    }
+    addFinishedExercise(exercise: Exercise){
+        this.db.collection('finishedExercises').add(exercise).then(()=>
+            console.log("ex add successfully to the collection")
+        )
+    }
+    cancelSubscriptions(){
+        this.firebaseSubscriptions.forEach(sub =>{
+            sub.unsubscribe()
+        })
     }
 }

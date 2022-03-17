@@ -9,7 +9,7 @@
         class="navigation-items">
           <li *ngIf="!logedIn"><a  routerLink="/signup">Sign Up</a></li>
           <li *ngIf="!logedIn"><a  routerLink="/login">Log In</a></li>
-          <li *ngIf="logedIn"><a  routerLink="/">Log Out</a></li>
+          <li *ngIf="logedIn"><a  (click)=logout() style="cursor: pointer;">Log Out</a></li>
 
           <li><a *ngIf="logedIn"  routerLink="/training" >Training</a></li>
         </ul>
